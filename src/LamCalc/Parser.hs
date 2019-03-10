@@ -22,7 +22,7 @@ type VarName = Text
 
 data ExprF a
   = VarF VarName
-  | LamF VarName
+  | LamF [VarName]
          a
   | AppF a
          a
@@ -52,7 +52,7 @@ lam :: Parser Expr
 lam = label "lambda abstraction" $ try $ lx $ pack <$> head <*> term
   where
     pack paramName body = Fix (LamF paramName body)
-    head = lx (char 'λ' <|> char '\\') *> varName <* lx (char '.')
+    head = lx (char 'λ' <|> char '\\') *> some varName <* lx (char '.')
 
 var :: Parser Expr
 var = Fix . VarF <$> varName

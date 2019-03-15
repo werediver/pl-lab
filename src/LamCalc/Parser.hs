@@ -3,12 +3,15 @@
 
 module LamCalc.Parser
   ( Expr
+  , ExprF(..)
   , expr
+  , Fix(..)
   ) where
 
 import Data.Functor (($>), (<&>))
-import Data.Functor.Classes (Show1)
+import Data.Functor.Classes (Eq1(..), Show1)
 import Data.Functor.Foldable
+import Data.List (foldl1')
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Void
@@ -26,6 +29,13 @@ data ExprF a
          a
   | AppF a
          a
+  deriving (Eq)
+
+instance Eq1 ExprF where
+  liftEq eq (VarF varNameA) (VarF varNameB) = varNameA == varNameB
+  liftEq eq (LamF varNamesA a) (LamF varNamesB b) = (varNamesA == varNamesB) && (a `eq` b)
+  liftEq eq (AppF a1 a2) (AppF b1 b2) = (a1 `eq` b1) && (a2 `eq` b2)
+  liftEq _ _ _ = False
 
 $(deriveShow1 ''ExprF)
 
@@ -43,7 +53,7 @@ app :: Parser Expr
 app = label "application" $ try $ pack <$> ((:) <$> term <*> some term)
   where
     pack :: [Expr] -> Expr
-    pack = foldl1 (\f x -> Fix (AppF f x))
+    pack = foldl1' (\f x -> Fix (AppF f x))
 
 term :: Parser Expr
 term = lam <|> var <|> (char '(' *> expr' <* char ')')

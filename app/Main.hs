@@ -7,17 +7,18 @@ import Control.Monad (unless)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Void
-import qualified LamCalc.Parser as LamParser
+import LamCalc.Untyped.Parser
+import LamCalc.Untyped.Parser.Expr
 import System.IO (hFlush, stdout)
 import Text.Megaparsec (ParseErrorBundle, errorBundlePretty, parse)
 
 prompt :: IO ()
 prompt = putStr "λ> " >> hFlush stdout
 
-parseLamExpr :: Text -> Either (ParseErrorBundle Text Void) LamParser.Expr
-parseLamExpr = parse LamParser.expr "stdin"
+parseLamExpr :: Text -> Either (ParseErrorBundle Text Void) Expr
+parseLamExpr = parse expr "stdin"
 
-printParseResult :: Either (ParseErrorBundle Text Void) LamParser.Expr -> IO ()
+printParseResult :: Either (ParseErrorBundle Text Void) Expr -> IO ()
 printParseResult =
   \case
     Left error -> putStrLn $ errorBundlePretty error

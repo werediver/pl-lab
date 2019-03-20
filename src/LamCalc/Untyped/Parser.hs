@@ -32,7 +32,7 @@ app = label "application" $ try $ pack <$> ((:) <$> term <*> some term)
     pack = foldl1' App
 
 term :: Parser Expr
-term = lam <|> var <|> (char '(' *> expr' <* char ')')
+term = lam <|> var <|> try (lx (char '(' *> expr' <* char ')'))
 
 lam :: Parser Expr
 lam = label "lambda abstraction" $ try $ lx $ Lam <$> head <*> term

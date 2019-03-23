@@ -1,5 +1,5 @@
 .idea/
 *.iml
 .stack-work/
-pl.cabal
+pl-lab.cabal
 *~

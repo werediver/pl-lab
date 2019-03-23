@@ -1,16 +1,16 @@
+{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
 
 module Main where
 
-import Control.Monad (unless)
-import Data.Text (Text)
-import qualified Data.Text as T
-import Data.Void
-import LamCalc.Untyped.Parser
-import LamCalc.Untyped.Parser.Expr
-import System.IO (hFlush, stdout)
-import Text.Megaparsec (ParseErrorBundle, errorBundlePretty, parse)
+import           Control.Monad               (unless)
+import           Data.Text                   (Text)
+import qualified Data.Text                   as T
+import           Data.Void
+import           LamCalc.Untyped.Parser
+import           LamCalc.Untyped.Parser.Expr
+import           System.IO                   (hFlush, stdout)
+import           Text.Megaparsec             (ParseErrorBundle, errorBundlePretty, parse)
 
 prompt :: IO ()
 prompt = putStr "λ> " >> hFlush stdout

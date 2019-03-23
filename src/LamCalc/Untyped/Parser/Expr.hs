@@ -1,8 +1,8 @@
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE DeriveFoldable #-}
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFoldable    #-}
+{-# LANGUAGE DeriveFunctor     #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 module LamCalc.Untyped.Parser.Expr
   ( Expr(..)
@@ -10,8 +10,8 @@ module LamCalc.Untyped.Parser.Expr
   , VarName
   ) where
 
-import Data.Functor.Foldable.TH
-import Data.Text (Text)
+import           Data.Functor.Foldable.TH
+import           Data.Text                (Text)
 
 type VarName = Text
 

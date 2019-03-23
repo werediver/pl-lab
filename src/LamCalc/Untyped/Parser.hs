@@ -35,7 +35,7 @@ term :: Parser Expr
 term = lam <|> var <|> try (lx (char '(' *> expr' <* char ')'))
 
 lam :: Parser Expr
-lam = label "lambda abstraction" $ try $ lx $ Lam <$> head <*> term
+lam = label "lambda abstraction" $ try $ lx $ Lam <$> head <*> expr'
   where
     head = lx (char 'λ' <|> char '\\') *> some varName <* lx (char '.')
 

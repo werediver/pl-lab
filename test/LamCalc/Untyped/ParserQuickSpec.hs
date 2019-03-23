@@ -5,7 +5,7 @@ module LamCalc.Untyped.ParserQuickSpec
   ( spec
   ) where
 
-import           Control.Monad                         (liftM2)
+import           Control.Applicative                   (liftA2)
 import           Data.Char
 import           Data.Functor.Foldable
 import           Data.Text                             (Text)
@@ -18,23 +18,34 @@ import           Test.Hspec
 import           Test.QuickCheck
 import           Text.Megaparsec                       (parseMaybe)
 
+data ExprPos
+  = Inner
+  | Trailing
+
 instance Pretty Expr where
-  pretty =
-    \case
-      Var varName -> pretty varName
-      Lam varNames e' -> pretty 'λ' <> hsep (pretty <$> varNames) <> pretty '.' <> prettyR e'
-      App e' e'' -> pretty e' <+> prettyR e''
+  pretty = pretty' Trailing
     where
-      prettyR e =
-        case e of
-          App eL eR -> parens $ pretty eL <+> prettyR eR
-          _         -> pretty e
+      pretty' :: ExprPos -> Expr -> Doc a
+      pretty' pos =
+        \case
+          Var varName -> pretty varName
+          Lam varNames e' ->
+            (case pos of
+               Inner    -> parens
+               Trailing -> id) $
+            pretty 'λ' <> hsep (pretty <$> varNames) <> pretty '.' <+> pretty e'
+          App f x -> pretty' Inner f <+> prettyR x
+        where
+          prettyR e =
+            case e of
+              App _ _ -> parens $ pretty e
+              _       -> pretty' pos e
 
 instance Arbitrary Expr where
   arbitrary = sized tree
     where
       tree 0 = Var <$> varName
-      tree n = oneof [liftM2 Lam (listOf1 varName) subtree, liftM2 App subtree subtree]
+      tree n = oneof [liftA2 Lam (listOf1 varName) subtree, liftA2 App subtree subtree]
         where
           subtree = tree $ n `div` 2
   shrink =

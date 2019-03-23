@@ -17,12 +17,14 @@ spec :: Spec
 spec =
   describe "expr" $ do
     it "parses a variable" $ sut "x" `shouldBe` (Just $ Var "x")
-    it "parses a parenthised variable" $ sut "(x)" `shouldBe` (Just $ Var "x")
-    it "parses an abstraction" $ sut "\\x.x" `shouldBe` (Just $ Lam ["x"] (Var "x"))
-    it "parses a parenthised abstraction with parenthised body" $
-      sut "(\\x.(x))" `shouldBe` (Just $ Lam ["x"] (Var "x"))
-    it "parses a multi-param abstraction" $
-      sut "\\x y.x" `shouldBe` (Just $ Lam ["x", "y"] (Var "x"))
-    it "parses a var-to-var application" $ sut "f x" `shouldBe` (Just $ App (Var "f") (Var "x"))
-    it "parses a lam-to-lam application" $
-      sut "\\x.x \\y.y" `shouldBe` (Just $ App (Lam ["x"] (Var "x")) (Lam ["y"] (Var "y")))
+    it "parses I combinator" $ sut "\\x. x" `shouldBe` (Just $ Lam ["x"] (Var "x"))
+    it "parses K combinator" $ sut "\\x. \\y. x" `shouldBe` (Just $ Lam ["x"] $ Lam ["y"] $ Var "x")
+    it "parses K combinator (multi-param)" $
+      sut "\\x y. x" `shouldBe` (Just $ Lam ["x", "y"] (Var "x"))
+    it "parses S combinator" $
+      sut "\\x. \\y. \\z. x z (y z)" `shouldBe`
+      (Just $
+       Lam ["x"] $ Lam ["y"] $ Lam ["z"] $ App (App (Var "x") (Var "z")) (App (Var "y") (Var "z")))
+    it "parses S combinator (multi-param)" $
+      sut "\\x y z. x z (y z)" `shouldBe`
+      (Just $ Lam ["x", "y", "z"] $ App (App (Var "x") (Var "z")) (App (Var "y") (Var "z")))

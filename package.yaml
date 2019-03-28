@@ -24,6 +24,7 @@ dependencies:
 - text >= 1.2 && < 2
 - recursion-schemes >= 5.1 && < 6
 - megaparsec >= 7.0.4 && < 8
+- prettyprinter >= 1.2 && < 2
 
 library:
   source-dirs: src
@@ -52,4 +53,3 @@ tests:
     - pl-lab
     - hspec
     - QuickCheck
-    - prettyprinter

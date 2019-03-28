@@ -18,29 +18,6 @@ import           Test.Hspec
 import           Test.QuickCheck
 import           Text.Megaparsec                       (parseMaybe)
 
-data ExprPos
-  = Inner
-  | Trailing
-
-instance Pretty Expr where
-  pretty = pretty' Trailing
-    where
-      pretty' :: ExprPos -> Expr -> Doc a
-      pretty' pos =
-        \case
-          Var varName -> pretty varName
-          Lam varNames e' ->
-            (case pos of
-               Inner    -> parens
-               Trailing -> id) $
-            pretty 'λ' <> hsep (pretty <$> varNames) <> pretty '.' <+> pretty e'
-          App f x -> pretty' Inner f <+> prettyR x
-        where
-          prettyR e =
-            case e of
-              App _ _ -> parens $ pretty e
-              _       -> pretty' pos e
-
 instance Arbitrary Expr where
   arbitrary = sized tree
     where

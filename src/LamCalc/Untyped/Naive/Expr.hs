@@ -5,7 +5,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
 
-module LamCalc.Untyped.Parser.Expr
+module LamCalc.Untyped.Naive.Expr
   ( Expr(..)
   , ExprF(..)
   , VarName
@@ -13,13 +13,13 @@ module LamCalc.Untyped.Parser.Expr
 
 import           Data.Functor.Foldable.TH
 import           Data.Text                 (Text)
-import           Data.Text.Prettyprint.Doc
+import           Data.Text.Prettyprint.Doc (Doc, Pretty (..), parens, (<+>))
 
 type VarName = Text
 
 data Expr
   = Var VarName
-  | Lam [VarName]
+  | Lam VarName
         Expr
   | App Expr
         Expr
@@ -38,7 +38,7 @@ instance Pretty Expr where
             (case pos of
                Inner    -> parens
                Trailing -> id) $
-            pretty 'λ' <> hsep (pretty <$> x) <> pretty '.' <+> pretty e
+            pretty 'λ' <> pretty x <> pretty '.' <+> pretty e
           App f x -> pretty' Inner f <+> prettyR x
         where
           prettyR e =

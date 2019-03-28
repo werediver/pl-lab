@@ -4,9 +4,7 @@ module LamCalc.Untyped.Parser
   ( expr
   ) where
 
-import           Data.Functor                (($>), (<&>))
-import           Data.Functor.Classes        (Eq1 (..), Show1)
-import           Data.Functor.Foldable
+import           Data.Functor                (($>))
 import           Data.List                   (foldl1')
 import           Data.Text                   (Text)
 import qualified Data.Text                   as T
@@ -15,7 +13,6 @@ import           LamCalc.Untyped.Parser.Expr
 import           Text.Megaparsec
 import           Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer  as L
-import           Text.Megaparsec.Debug
 
 type Parser = Parsec Void Text
 

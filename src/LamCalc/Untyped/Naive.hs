@@ -14,6 +14,7 @@ desugar =
     P.Var x -> Var x
     P.Lam (x:xs) e -> Lam x (desugar $ P.Lam xs e)
     P.Lam [] e -> desugar e
+    P.Let x e e' -> App (Lam x (desugar e')) (desugar e)
 
 freeVars :: Expr -> [VarName]
 freeVars (Var x)   = [x]

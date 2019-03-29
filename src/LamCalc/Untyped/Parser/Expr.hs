@@ -23,6 +23,9 @@ data Expr
         Expr
   | App Expr
         Expr
+  | Let VarName
+        Expr
+        Expr
   deriving (Eq, Show)
 
 makeBaseFunctor ''Expr
@@ -40,6 +43,9 @@ instance Pretty Expr where
                Trailing -> id) $
             pretty 'λ' <> hsep (pretty <$> x) <> pretty '.' <+> pretty e
           App f x -> pretty' Inner f <+> prettyR x
+          Let x e e' ->
+            pretty "let" <+>
+            pretty x <+> pretty '=' <+> pretty e <> line <+> pretty "in" <+> align (pretty e')
         where
           prettyR e =
             case e of

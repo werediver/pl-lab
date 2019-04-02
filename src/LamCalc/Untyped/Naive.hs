@@ -53,7 +53,7 @@ whnf e@(Lam _ _) = e
 whnf (App f x) =
   case whnf f of
     Lam x' e' -> whnf (subst x' x e')
-    e'        -> e'
+    f'        -> App f' x
 
 nf :: Expr -> Expr
 nf e@(Var _) = e

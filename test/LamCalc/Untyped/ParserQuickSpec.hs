@@ -5,7 +5,7 @@ module LamCalc.Untyped.ParserQuickSpec
   ( spec
   ) where
 
-import           Control.Applicative                   (liftA2)
+import           Control.Applicative                   (liftA2, liftA3)
 import           Data.Char
 import           Data.Functor.Foldable
 import           Data.Text                             (Text)
@@ -22,7 +22,12 @@ instance Arbitrary Expr where
   arbitrary = sized tree
     where
       tree 0 = Var <$> varName
-      tree n = oneof [liftA2 Lam (listOf1 varName) subtree, liftA2 App subtree subtree]
+      tree n =
+        oneof
+          [ liftA2 Lam (listOf1 varName) subtree
+          , liftA2 App subtree subtree
+          , liftA3 Let varName subtree subtree
+          ]
         where
           subtree = tree $ n `div` 2
   shrink =
@@ -36,15 +41,12 @@ instance Arbitrary Expr where
         [e', Var (head varNames)]
       AppF (lhs, altsL) (rhs, altsR) ->
         (App lhs <$> altsR) <> ((`App` rhs) <$> altsL) <> [lhs, rhs, Var "__shrunkApp"]
+      LetF x (def, defAlts) (body, bodyAlts) ->
+        ((\alt -> Let x alt body) <$> defAlts) <> (Let x def <$> bodyAlts) <>
+        [def, body, Var "__shrunkLet"]
 
 varName :: Gen Text
-varName = do
-  head <- frequency [(4, charThat isLower), (1, pure '_')]
-  body <- resize 3 $ listOf $ frequency [(4, charThat isAlphaNum), (1, pure '_')]
-  tail <- resize 2 $ listOf (pure '\'')
-  return $ T.pack $ head : body <> tail
-  where
-    charThat = (choose ('\x00', '\x7f') `suchThat`)
+varName = T.singleton <$> choose ('a', 'z')
 
 serialize :: Pretty a => a -> Text
 serialize = renderStrict . layoutPretty defaultLayoutOptions . pretty

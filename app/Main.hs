@@ -17,7 +17,7 @@ import           Text.Megaparsec             (ParseErrorBundle, errorBundlePrett
 prompt :: IO ()
 prompt = putStr "λ> " >> hFlush stdout
 
-parseLamExpr :: Text -> Either (ParseErrorBundle Text Void) P.Expr
+parseLamExpr :: Text -> Either (ParseErrorBundle Text Void) (P.Expr Text)
 parseLamExpr = parse expr "stdin"
 
 printResult :: Pretty a => Either (ParseErrorBundle Text Void) a -> IO ()

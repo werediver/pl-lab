@@ -4,10 +4,11 @@
 module LamCalc.Untyped.Naive where
 
 import           Data.List                   (union, (\\))
+import           Data.String                 (IsString)
 import           LamCalc.Untyped.Naive.Expr
 import qualified LamCalc.Untyped.Parser.Expr as P
 
-desugar :: P.Expr -> Expr
+desugar :: P.Expr a -> Expr a
 desugar =
   \case
     P.App f x -> App (desugar f) (desugar x)
@@ -16,12 +17,12 @@ desugar =
     P.Lam [] e -> desugar e
     P.Let x e e' -> App (Lam x (desugar e')) (desugar e)
 
-freeVars :: Expr -> [VarName]
+freeVars :: Eq a => Expr a -> [a]
 freeVars (Var x)   = [x]
 freeVars (Lam x e) = freeVars e \\ [x]
 freeVars (App f x) = freeVars f `union` freeVars x
 
-subst :: VarName -> Expr -> Expr -> Expr
+subst :: (Eq a, Semigroup a, IsString a) => a -> Expr a -> Expr a -> Expr a
 subst targetVar substitution = subst'
   where
     subst' e@(Var x)
@@ -42,13 +43,13 @@ subst targetVar substitution = subst'
             else x'
     substitutionFreeVars = freeVars substitution
 
-alphaEq :: Expr -> Expr -> Bool
+alphaEq :: (Eq a, Semigroup a, IsString a) => Expr a -> Expr a -> Bool
 alphaEq (Var x) (Var x')      = x == x'
 alphaEq (Lam x e) (Lam x' e') = alphaEq e (subst x' (Var x) e')
 alphaEq (App f x) (App f' x') = alphaEq f f' && alphaEq x x'
 alphaEq _ _                   = False
 
-whnf :: Expr -> Expr
+whnf :: (Eq a, Semigroup a, IsString a) => Expr a -> Expr a
 whnf e@(Var _) = e
 whnf e@(Lam _ _) = e
 whnf (App f x) =
@@ -56,7 +57,7 @@ whnf (App f x) =
     Lam x' e' -> whnf (subst x' x e')
     f'        -> App f' x
 
-nf :: Expr -> Expr
+nf :: (Eq a, Semigroup a, IsString a) => Expr a -> Expr a
 nf e@(Var _) = e
 nf (Lam x e') = Lam x (nf e')
 nf (App f x) =
@@ -64,5 +65,5 @@ nf (App f x) =
     Lam x' e' -> nf (subst x' x e')
     f'        -> App (nf f') (nf x)
 
-betaEq :: Expr -> Expr -> Bool
+betaEq :: (Eq a, Semigroup a, IsString a) => Expr a -> Expr a -> Bool
 betaEq x y = nf x `alphaEq` nf y

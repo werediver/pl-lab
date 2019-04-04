@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -18,7 +19,7 @@ import           Test.Hspec
 import           Test.QuickCheck
 import           Text.Megaparsec                       (parseMaybe)
 
-instance Arbitrary Expr where
+instance Arbitrary (Expr Text) where
   arbitrary = sized tree
     where
       tree 0 = Var <$> varName
@@ -51,7 +52,7 @@ varName = T.singleton <$> choose ('a', 'z')
 serialize :: Pretty a => a -> Text
 serialize = renderStrict . layoutPretty defaultLayoutOptions . pretty
 
-sut :: Text -> Maybe Expr
+sut :: Text -> Maybe (Expr Text)
 sut = parseMaybe expr
 
 spec :: Spec

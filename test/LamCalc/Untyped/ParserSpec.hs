@@ -10,7 +10,7 @@ import           LamCalc.Untyped.Parser.Expr
 import           Test.Hspec
 import           Text.Megaparsec             (parseMaybe)
 
-sut :: Text -> Maybe Expr
+sut :: Text -> Maybe (Expr Text)
 sut = parseMaybe expr
 
 spec :: Spec

@@ -18,27 +18,31 @@ import qualified Text.Megaparsec.Char.Lexer  as L
 
 type Parser = Parsec Void Text
 
-expr :: Parser Expr
+type VarName = Text
+
+type Expr' = Expr VarName
+
+expr :: Parser Expr'
 expr = sp *> expr' <* eof
 
-expr' :: Parser Expr
+expr' :: Parser Expr'
 expr' = letBinding <|> app <|> term
 
-app :: Parser Expr
+app :: Parser Expr'
 app = label "application" $ try $ pack <$> ((:) <$> term <*> some term)
   where
-    pack :: [Expr] -> Expr
+    pack :: [Expr'] -> Expr'
     pack = foldl1' App
 
-term :: Parser Expr
+term :: Parser Expr'
 term = lam <|> var <|> try (lx (char '(' *> expr' <* char ')'))
 
-lam :: Parser Expr
+lam :: Parser Expr'
 lam = label "lambda abstraction" $ try $ lx $ Lam <$> head <*> expr'
   where
     head = lx (char 'λ' <|> char '\\') *> some varName <* lx (char '.')
 
-var :: Parser Expr
+var :: Parser Expr'
 var = Var <$> varName
 
 varName :: Parser VarName
@@ -53,7 +57,7 @@ varName = label "variable name" $ try $ lx $ head <> body <> tail >>= check
         else unexpectedLabel ("keyword \"" <> T.unpack x <> "\"")
     keywords = ["let", "in"]
 
-letBinding :: Parser Expr
+letBinding :: Parser Expr'
 letBinding =
   label "let-binding" $
   try $

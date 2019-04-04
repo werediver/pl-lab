@@ -1,36 +1,33 @@
-{-# LANGUAGE DeriveFoldable    #-}
-{-# LANGUAGE DeriveFunctor     #-}
-{-# LANGUAGE DeriveTraversable #-}
-{-# LANGUAGE LambdaCase        #-}
-{-# LANGUAGE TemplateHaskell   #-}
-{-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE DeriveFoldable      #-}
+{-# LANGUAGE DeriveFunctor       #-}
+{-# LANGUAGE DeriveTraversable   #-}
+{-# LANGUAGE LambdaCase          #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell     #-}
+{-# LANGUAGE TypeFamilies        #-}
 
 module LamCalc.Untyped.Naive.Expr
   ( Expr(..)
   , ExprF(..)
-  , VarName
   ) where
 
 import           Data.Functor.Foldable.TH
-import           Data.Text                 (Text)
 import           Data.Text.Prettyprint.Doc (Doc, Pretty (..), parens, (<+>))
 
-type VarName = Text
-
-data Expr
-  = Var VarName
-  | Lam VarName
-        Expr
-  | App Expr
-        Expr
+data Expr a
+  = Var !a
+  | Lam !a
+        (Expr a)
+  | App (Expr a)
+        (Expr a)
   deriving (Eq, Show)
 
 makeBaseFunctor ''Expr
 
-instance Pretty Expr where
+instance Pretty a => Pretty (Expr a) where
   pretty = pretty' Trailing
     where
-      pretty' :: ExprPos -> Expr -> Doc a
+      pretty' :: ExprPos -> Expr a -> Doc b
       pretty' pos =
         \case
           Var x -> pretty x

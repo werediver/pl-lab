@@ -1,16 +1,13 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module LamCalc.Untyped.ParserSpec
   ( spec
   ) where
 
-import           Data.Text                   (Text)
 import           LamCalc.Untyped.Parser
 import           LamCalc.Untyped.Parser.Expr
 import           Test.Hspec
 import           Text.Megaparsec             (parseMaybe)
 
-sut :: Text -> Maybe (Expr Text)
+sut :: String -> Maybe (Expr String)
 sut = parseMaybe expr
 
 spec :: Spec

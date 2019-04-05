@@ -1,5 +1,6 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies     #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 module LamCalc.Untyped.Parser.Source where
 
@@ -13,6 +14,10 @@ class (Stream s, Token s ~ Char, IsString (Tokens s), IsString s, Semigroup s, E
   where
   fromChar :: Char -> s
   toString :: s -> String
+
+instance Source String where
+  fromChar = (: [])
+  toString = id
 
 instance Source Text where
   fromChar = T.singleton

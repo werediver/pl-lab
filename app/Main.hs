@@ -4,7 +4,6 @@
 module Main where
 
 import           Control.Monad               (unless)
-import           Data.Text                   (Text)
 import qualified Data.Text                   as T
 import           Data.Text.Prettyprint.Doc   (Pretty, pretty)
 import           Data.Void
@@ -17,10 +16,10 @@ import           Text.Megaparsec             (ParseErrorBundle, errorBundlePrett
 prompt :: IO ()
 prompt = putStr "λ> " >> hFlush stdout
 
-parseLamExpr :: Text -> Either (ParseErrorBundle Text Void) (P.Expr Text)
+parseLamExpr :: Source s => s -> Either (ParseErrorBundle s Void) (P.Expr s)
 parseLamExpr = parse expr "stdin"
 
-printResult :: Pretty a => Either (ParseErrorBundle Text Void) a -> IO ()
+printResult :: (Source s, Pretty a) => Either (ParseErrorBundle s Void) a -> IO ()
 printResult =
   \case
     Left error -> putStrLn $ errorBundlePretty error

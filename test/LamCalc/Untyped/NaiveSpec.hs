@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module LamCalc.Untyped.NaiveSpec where
 
 import           LamCalc.Untyped.Naive      (whnf)

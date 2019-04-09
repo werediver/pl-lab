@@ -31,11 +31,11 @@ instance Pretty a => Pretty (Expr a) where
       pretty' pos =
         \case
           Var x -> pretty x
-          Lam x e ->
+          Lam x body ->
             (case pos of
                Inner    -> parens
                Trailing -> id) $
-            pretty 'λ' <> pretty x <> pretty '.' <+> pretty e
+            pretty 'λ' <> pretty x <> pretty '.' <+> pretty body
           App f x -> pretty' Inner f <+> prettyR x
         where
           prettyR e =

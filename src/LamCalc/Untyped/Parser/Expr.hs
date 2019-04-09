@@ -34,24 +34,24 @@ instance Pretty a => Pretty (Expr a) where
       pretty' pos =
         \case
           Var x -> pretty x
-          Lam x e ->
+          Lam x body ->
             (if isTrailing pos
                then id
                else parens) $
-            pretty 'λ' <> hsep (pretty <$> x) <> pretty '.' <+> pretty' isolated e
+            pretty 'λ' <> hsep (pretty <$> x) <> pretty '.' <+> pretty' isolated body
           App f x ->
             (if isLeading pos
                then id
                else parens) $
             pretty' (nonTrailing pos) f <+> pretty' (nonLeading pos) x
-          Let x e e' ->
+          Let x e body ->
             (if isIsolated pos
                then id
                else parens) $
             pretty "let" <+>
             pretty x <+>
             pretty '=' <+>
-            pretty' isolated e <> line <+> pretty "in" <+> align (pretty' isolated e')
+            pretty' isolated e <> line <+> pretty "in" <+> align (pretty' isolated body)
 
 data ExprPos = ExprPos
   { isLeading  :: Bool

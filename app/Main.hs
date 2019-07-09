@@ -24,7 +24,7 @@ main =
     Quit -> return ()
     Run s ->
       let result = nf . desugar <$> parseLamExpr s
-       in printResult result >> main
+       in (putStrLn . showResult) result >> main
 
 getRequest :: IO Request
 getRequest = do
@@ -42,11 +42,11 @@ getRequest = do
 parseLamExpr :: Source s => s -> Either (ParseErrorBundle s Void) (P.Expr s)
 parseLamExpr = parse expr "stdin"
 
-printResult :: (Source s, Pretty a) => Either (ParseErrorBundle s Void) a -> IO ()
-printResult =
+showResult :: (Source s, Pretty a) => Either (ParseErrorBundle s Void) a -> String
+showResult =
   \case
-    Left error -> putStrLn $ errorBundlePretty error
-    Right result -> print $ pretty result
+    Left error -> errorBundlePretty error
+    Right result -> show $ pretty result
 
 getLine' :: IsString s => IO (Maybe s)
 getLine' =

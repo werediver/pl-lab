@@ -8,7 +8,7 @@ import           Data.Text                   (Text)
 import qualified Data.Text                   as T
 import           Data.Text.Prettyprint.Doc   (Pretty, pretty)
 import           Data.Void
-import           LamCalc.Untyped.Naive       (desugar, nf)
+import           LamCalc.Untyped.DeBruijn    (desugar, nf)
 import           LamCalc.Untyped.Parser
 import qualified LamCalc.Untyped.Parser.Expr as P
 import           System.IO                   (hFlush, isEOF, stdout)

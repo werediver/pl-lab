@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module LamCalc.Untyped.DeBruijn where
@@ -33,8 +34,32 @@ substBound target e = substBound'
         Bound n
           | n == target -> e
           | otherwise -> body
-        Lam body' -> Lam $ substBound (target + 1) e body'
+        Lam body' -> Lam $ substBound (target + 1) (push e) body'
         App f x -> App (substBound' f) (substBound' x)
+
+push :: Expr a -> Expr a
+push = push' 0
+  where
+    push' lamDepth =
+      \case
+        e@(Free _) -> e
+        e@(Bound n)
+          | n >= lamDepth -> Bound (n + 1)
+          | otherwise -> e
+        Lam body -> Lam $ push' (lamDepth + 1) body
+        App f x -> App (push' lamDepth f) (push' lamDepth x)
+
+pull :: Expr a -> Expr a
+pull = pull' 0
+  where
+    pull' lamDepth =
+      \case
+        e@(Free _) -> e
+        e@(Bound n)
+          | n > lamDepth -> Bound (n - 1)
+          | otherwise -> e
+        Lam body -> Lam $ pull' (lamDepth + 1) body
+        App f x -> App (pull' lamDepth f) (pull' lamDepth x)
 
 whnf :: Expr a -> Expr a
 whnf e@(Free _) = e
@@ -42,7 +67,7 @@ whnf e@(Bound _) = e
 whnf e@(Lam _) = e
 whnf (App f x) =
   case whnf f of
-    Lam body -> whnf (substBound 0 x body)
+    Lam body -> pull $ whnf $ substBound 0 x body
     f'       -> App f' x
 
 nf :: Expr a -> Expr a
@@ -51,7 +76,7 @@ nf e@(Bound _) = e
 nf (Lam body) = Lam $ nf body
 nf (App f x) =
   case whnf f of
-    Lam body -> nf (substBound 0 x body)
+    Lam body -> pull $ nf $ substBound 0 x body
     f'       -> App (nf f') (nf x)
 
 betaEq :: Expr a -> Expr a -> Bool

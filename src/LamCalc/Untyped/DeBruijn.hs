@@ -22,21 +22,6 @@ desugar e = desugar' e []
         P.App f x         -> App (desugar' f bs) (desugar' x bs)
         P.Let x e body    -> App (Lam $ desugar' body (x : bs)) (desugar' e bs)
 
-substFree :: a -> Expr a -> Expr a -> Expr a
-substFree = undefined
-
-substBound :: Int -> Expr a -> Expr a -> Expr a
-substBound target e = substBound'
-  where
-    substBound' body =
-      case body of
-        Free _ -> body
-        Bound n
-          | n == target -> e
-          | otherwise -> body
-        Lam body' -> Lam $ substBound (target + 1) (push e) body'
-        App f x -> App (substBound' f) (substBound' x)
-
 push :: Expr a -> Expr a
 push = push' 0
   where
@@ -60,6 +45,21 @@ pull = pull' 0
           | otherwise -> e
         Lam body -> Lam $ pull' (lamDepth + 1) body
         App f x -> App (pull' lamDepth f) (pull' lamDepth x)
+
+substBound :: Int -> Expr a -> Expr a -> Expr a
+substBound target e = substBound'
+  where
+    substBound' body =
+      case body of
+        Free _ -> body
+        Bound n
+          | n == target -> e
+          | otherwise -> body
+        Lam body' -> Lam $ substBound (target + 1) (push e) body'
+        App f x -> App (substBound' f) (substBound' x)
+
+substFree :: a -> Expr a -> Expr a -> Expr a
+substFree = undefined
 
 whnf :: Expr a -> Expr a
 whnf e@(Free _) = e

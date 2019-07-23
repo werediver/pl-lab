@@ -11,10 +11,14 @@ module LamCalc.Untyped.DeBruijn.Expr where
 import           Data.Functor.Foldable.TH
 import           Data.Text.Prettyprint.Doc (Doc, Pretty (..), parens, (<+>))
 
+newtype Scope f a =
+  Scope (f a)
+  deriving (Eq, Show)
+
 data Expr a
   = Free !a
   | Bound !Int
-  | Lam (Expr a)
+  | Lam (Scope Expr a)
   | App (Expr a)
         (Expr a)
   deriving (Eq, Show)
@@ -29,7 +33,7 @@ instance Pretty a => Pretty (Expr a) where
         \case
           Free x -> pretty x
           Bound n -> pretty (bs !! n)
-          Lam body ->
+          Lam (Scope body) ->
             (case pos of
                Inner    -> parens
                Trailing -> id) $

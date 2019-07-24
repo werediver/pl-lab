@@ -6,7 +6,7 @@
 {-# LANGUAGE TemplateHaskell     #-}
 {-# LANGUAGE TypeFamilies        #-}
 
-module LamCalc.Untyped.DeBruijn.Expr where
+module LamCalc.Untyped.DeBruijn.Int.Expr where
 
 import           Data.Functor.Foldable.TH
 import           Data.Text.Prettyprint.Doc (Doc, Pretty (..), parens, (<+>))

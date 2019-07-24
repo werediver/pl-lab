@@ -1,11 +1,11 @@
 {-# LANGUAGE LambdaCase          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module LamCalc.Untyped.DeBruijn where
+module LamCalc.Untyped.DeBruijn.Int where
 
-import           Data.List                     (elemIndex)
-import           LamCalc.Untyped.DeBruijn.Expr
-import qualified LamCalc.Untyped.Parser.Expr   as P
+import           Data.List                         (elemIndex)
+import           LamCalc.Untyped.DeBruijn.Int.Expr
+import qualified LamCalc.Untyped.Parser.Expr       as P
 
 desugar ::
      forall a. Eq a

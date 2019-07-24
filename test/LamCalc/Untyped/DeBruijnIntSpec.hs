@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeApplications #-}
 
-module LamCalc.Untyped.DeBruijnSpec where
+module LamCalc.Untyped.DeBruijnIntSpec where
 
-import           LamCalc.Untyped.DeBruijn      (nf, whnf)
-import           LamCalc.Untyped.DeBruijn.Expr
+import           LamCalc.Untyped.DeBruijn.Int      (nf, whnf)
+import           LamCalc.Untyped.DeBruijn.Int.Expr
 import           Test.Hspec
 
 spec :: Spec

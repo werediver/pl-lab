@@ -23,7 +23,7 @@ data Expr a
   | Let !a
         (Expr a)
         (Expr a)
-  deriving (Eq, Show)
+  deriving (Eq, Functor, Show)
 
 makeBaseFunctor ''Expr
 
